@@ -31,6 +31,26 @@ def usage(argv):
 
 def mymain(inFname, outFname):
     mat_HRIR = sio.loadmat(inFname)
+    l_eq_struct = mat_HRIR['l_eq_hrir_S'] 
+    val = l_eq_struct[0,0]
+    l_elev_v = val['elev_v']
+    l_azim_v = val['azim_v']
+    l_type_s = val['type_s']
+    l_sampling_hz = val['sampling_hz']
+    l_content_m = val['content_m']
+ 
+    r_eq_struct = mat_HRIR['r_eq_hrir_S'] 
+    val = r_eq_struct[0,0]
+    r_elev_v = val['elev_v']
+    r_azim_v = val['azim_v']
+    r_type_s = val['type_s']
+    r_sampling_hz = val['sampling_hz']
+    r_content_m = val['content_m']
+    
+    print(r_elev_v)
+
+    #l_eq_hrir_S = mat_HRIR.get('l_eq_hrir_S')
+    #fs = l_eq_hrir_S.get('sampling_hz')
 
     return
 
@@ -72,7 +92,7 @@ if __name__ == '__main__':
         print('[ERR] Oputut file is not h file:', out_token)
         sys.exit(6)
     
-    print('%s --->' % inFname, end=' ')
+#   print('%s --->' % inFname, end=' ')
     mymain(inFname, outFname)
-    print('%s' % outFname)
+#   print('%s' % outFname)
     sys.exit(0)
