@@ -29,6 +29,26 @@ def usage(argv):
     print('')
     return
 
+def write_HRIR (outFname,l_elev_v, l_azim_v, l_content_m, r_content_m):
+    f = open(outFname,'w')
+    l_elev_v = (l_elev_v + 45)/15
+
+    cnt = np.zeros(max(l_elev_v)+1)
+    for i in range(len(l_elev_v)):
+        cnt[l_elev_v[i]] += 1
+
+    arr = np.zeros(len(cnt)+1)
+    for i in range(1, len(arr)):
+        arr[i] = arr[i-1] + cnt[i-1]
+    
+    f.write('int ele[%d] = {' %len(arr))
+    f.write(str(int(arr[0])))
+    for i in range(1, len(arr)):
+        f.write(', ' + str(int(arr[i])))
+    f.write('};')
+    f.close()
+    return
+
 def mymain(inFname, outFname):
     mat_HRIR = sio.loadmat(inFname)
     l_eq_struct = mat_HRIR['l_eq_hrir_S'] 
@@ -47,11 +67,10 @@ def mymain(inFname, outFname):
     r_sampling_hz = val['sampling_hz']
     r_content_m = val['content_m']
     
-    print(r_elev_v)
-
     #l_eq_hrir_S = mat_HRIR.get('l_eq_hrir_S')
     #fs = l_eq_hrir_S.get('sampling_hz')
 
+    write_HRIR (outFname,l_elev_v, l_azim_v, l_content_m, r_content_m)
     return
 
 if __name__ == '__main__':
