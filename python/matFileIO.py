@@ -29,8 +29,7 @@ def usage(argv):
     print('')
     return
 
-def write_HRIR (outFname,l_elev_v, l_azim_v, l_content_m, r_content_m):
-    f = open(outFname,'w')
+def write_HRIR_degree (f, l_elev_v, l_azim_v):
     l_elev_v = (l_elev_v + 45)/15
 
     cnt = np.zeros(max(l_elev_v)+1)
@@ -46,7 +45,14 @@ def write_HRIR (outFname,l_elev_v, l_azim_v, l_content_m, r_content_m):
     for i in range(1, len(arr)):
         f.write(', ' + str(int(arr[i])))
     f.write('};')
-    f.close()
+    f.write('\n')
+    f.write('int azi[%d] = {' %len(l_azim_v))
+    f.write(str(int(l_azim_v[0])))
+    for i in range(1,len(l_azim_v)):
+        f.write(', ' + str(int(l_azim_v[i])))
+
+    f.write('};')
+
     return
 
 def mymain(inFname, outFname):
@@ -70,7 +76,9 @@ def mymain(inFname, outFname):
     #l_eq_hrir_S = mat_HRIR.get('l_eq_hrir_S')
     #fs = l_eq_hrir_S.get('sampling_hz')
 
-    write_HRIR (outFname,l_elev_v, l_azim_v, l_content_m, r_content_m)
+    f = open(outFname,'w')
+    write_HRIR_degree (f, l_elev_v, l_azim_v)
+    f.close()
     return
 
 if __name__ == '__main__':
