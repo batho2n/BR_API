@@ -52,8 +52,17 @@ def write_HRIR_degree (f, l_elev_v, l_azim_v):
         f.write(', ' + str(int(l_azim_v[i])))
 
     f.write('};')
+    f.write('\n')
+    return
+
+def write_HRIR_filter (f, l_content_m, r_content_m):
+    n = len(l_content_m)
+    m = len(l_content_m[0])
+    f.write('float l_HRTF[%d][%d] = {' %(n, m))
+    f.write('float r_HRTF[%d][%d] = {' %(n, m))
 
     return
+
 
 def mymain(inFname, outFname):
     mat_HRIR = sio.loadmat(inFname)
@@ -78,6 +87,7 @@ def mymain(inFname, outFname):
 
     f = open(outFname,'w')
     write_HRIR_degree (f, l_elev_v, l_azim_v)
+    write_HRIR_filter (f, l_content_m, r_content_m)
     f.close()
     return
 
