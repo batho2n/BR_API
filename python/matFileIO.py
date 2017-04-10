@@ -59,7 +59,31 @@ def write_HRIR_filter (f, l_content_m, r_content_m):
     n = len(l_content_m)
     m = len(l_content_m[0])
     f.write('float l_HRTF[%d][%d] = {' %(n, m))
+    for i in range(n):
+        f.write('{')
+        f.write(str(float(l_content_m[i][0])))
+        for j in range(1,m):
+            f.write(', ' + str(float(l_content_m[i][j])))
+        if i is n-1:
+            f.write('}}')
+        else:
+            f.write('},')
+            f.write('\n')
+    f.write('\n')
+    
     f.write('float r_HRTF[%d][%d] = {' %(n, m))
+    for i in range(n):
+        f.write('{')
+        f.write(str(float(r_content_m[i][0])))
+        for j in range(1,m):
+            f.write(', ' + str(float(r_content_m[i][j])))
+        if i is n-1:
+            f.write('}}')
+        else:
+            f.write('},')
+            f.write('\n')
+
+    f.write('\n')
 
     return
 
