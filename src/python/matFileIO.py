@@ -65,7 +65,7 @@ def write_HRIR_filter (f, l_content_m, r_content_m):
         for j in range(1,m):
             f.write(', ' + str(float(l_content_m[i][j])))
         if i is n-1:
-            f.write('}}')
+            f.write('}};')
         else:
             f.write('},')
             f.write('\n')
@@ -78,7 +78,7 @@ def write_HRIR_filter (f, l_content_m, r_content_m):
         for j in range(1,m):
             f.write(', ' + str(float(r_content_m[i][j])))
         if i is n-1:
-            f.write('}}')
+            f.write('}};')
         else:
             f.write('},')
             f.write('\n')
@@ -110,8 +110,11 @@ def mymain(inFname, outFname):
     #fs = l_eq_hrir_S.get('sampling_hz')
 
     f = open(outFname,'w')
+    f.write('#ifndef __HRIR_H__\n')
+    f.write('#define __HRIR_H__\n')
     write_HRIR_degree (f, l_elev_v, l_azim_v)
     write_HRIR_filter (f, l_content_m, r_content_m)
+    f.write('#endif')
     f.close()
     return
 
@@ -153,7 +156,7 @@ if __name__ == '__main__':
         print('[ERR] Oputut file is not h file:', out_token)
         sys.exit(6)
     
-#   print('%s --->' % inFname, end=' ')
+    print('%s --->' % inFname, end=' ')
     mymain(inFname, outFname)
-#   print('%s' % outFname)
+    print('%s' % outFname)
     sys.exit(0)
