@@ -3,6 +3,8 @@
 
 #include "HRIR.h"
 #include "BR_api.h"
+#include "BR_core.h"
+#include "common.h"
 
 int AudioRendering(int f_length)
 {
@@ -14,10 +16,8 @@ int AudioRendering(int f_length)
 
     printf("This is f_length: %5d\n",f_length);
     
-    for(i=0;i<10;i++)
-    {
-        printf("[%02d]: %d\n",i, ele[i]);
-    }
+    WaveRead();
+    AudioRenderCore();
 
     return 0;           //No ERR
 }
