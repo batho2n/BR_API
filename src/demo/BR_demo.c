@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "BR_api.h"
+#include "common.h"
 
 void Usage(char *argv)
 {
@@ -13,7 +14,6 @@ void Usage(char *argv)
     fprintf(stderr,"    -d  : Distance 1 ~ 5, 1 is nearest, [default 1]\n");
     fprintf(stderr,"    -h  : Show usage of %s\n", argv);
 }
-
 
 
 int main(int argc, char **argv)
@@ -58,15 +58,19 @@ int main(int argc, char **argv)
             }
     }
 
-    errCode = AudioRendering(5);
-    if(errCode != 0)
+	
+	//errCode = AudioRendering(5);
+	if(errCode != 0)
     {
         fprintf(stderr,"[Err:%d] Error\n",errCode);
         return 0;
     }
+
+	
     //Memory Allocation of input/output files
     //Input Wave Read
-
+	printf("Start\n");
+	FileGetSize(outputFname,);
     //Azimuth and elevation recalculating
 
     //Rendering the signal(short time buffer processing)

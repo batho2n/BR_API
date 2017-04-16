@@ -14,5 +14,8 @@
 
 int AudioRendering(int f_length);
 
+int AudioRenderingExec(RENDER_HANDLE *handle);
+int AudioRenderingCreate(RENDER_HANDLE *handle);
+int AudioRenderingDestroy(RENDER_HANDLE *handle);
 
 #endif

@@ -11,7 +11,5 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-int WaveRead();
-
-
+int FileGetSize(const char *fileName, int *size);
 #endif
