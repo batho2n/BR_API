@@ -4,6 +4,7 @@
 
 #include "BR_api.h"
 #include "common.h"
+#include "define.h"
 
 void Usage(char *argv)
 {
@@ -24,16 +25,16 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    char inputFname[256];
-    char outputFname[256];
+    char inFileName[256];
+    char outFileName[256];
     int azimuth = 0;
     int elevation = 0;
     int distance = 3;
     
     int errCode;
     int args = 1;
-    strcpy(inputFname,argv[args++]);
-    strcpy(outputFname,argv[args++]);
+    strcpy(inFileName,argv[args++]);
+    strcpy(outFileName,argv[args++]);
 
     for(;args<argc;args++)
     {
@@ -66,16 +67,39 @@ int main(int argc, char **argv)
         return 0;
     }
 
-	
+	int fileSize;
+
     //Memory Allocation of input/output files
-    //Input Wave Read
-	printf("Start\n");
-	FileGetSize(outputFname,);
+    /* Wav Open and Header Read */
+	FILE *inFile = fopen(inFileName,"rb");
+	WAV_HEADER header;
+	if(inFile == NULL)	return 0;
+	else				fread(&header, 1, sizeof(WAV_HEADER),inFile);
+	
+	int sampleRate = header.sampleRate;
+	int numChannels= header.numChannels;
+	
+	if(sampleRate > MAX_SAMPLE_RATE)
+	{
+		printf("[Err]Sample Rate must be under %d Hz\n", MAX_SAMPLE_RATE);
+		return 0;
+	}
+	if(numChannels != 1)
+	{
+		printf("[Err]Input signal must be mono signal\n");
+		return 0;
+	}
+
+	
+
     //Azimuth and elevation recalculating
+
+	RENDER_HANDLE info;
 
     //Rendering the signal(short time buffer processing)
     //3D Audio Rendering
-
+	printf("AudioRendering\n");
+	AudioRendering(azimuth);
 
     //Output Wave Check Clipping
     //Output Wave writing

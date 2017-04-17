@@ -11,6 +11,7 @@
 #ifndef __BR_API_H__
 #define __BR_API_H__
 
+typedef void *RENDER_HANDLE;
 
 int AudioRendering(int f_length);
 

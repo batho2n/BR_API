@@ -34,7 +34,6 @@ int AudioRendering(int f_length)
 
     printf("This is f_length: %5d\n",f_length);
     
-    WaveRead();
     AudioRenderCore();
 
     return 0;           //No ERR

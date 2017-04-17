@@ -11,5 +11,26 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-int FileGetSize(const char *fileName, int *size);
+typedef struct _WAV_HEADER_
+{
+    char     chunkId[4];
+    uint32_t chunkSize;
+    char     format[4];
+    char     fmtchunkId[4];
+    uint32_t fmtchunkSize;
+    uint16_t audioFormat;
+    uint16_t numChannels;
+    uint32_t sampleRate;
+    uint32_t byteRate;
+    uint16_t blockAlign;
+    uint16_t bps;
+    char     datachunkId[4];
+    uint32_t datachunkSize;
+}WAV_HEADER;
+
+
+int GetFileSize(const char *fileName, int *size);
+
+int ReadWavHeader(FILE *file); 
+
 #endif
