@@ -2,6 +2,8 @@
 
 GCC         = gcc
 CFLAGS		= -O2 -W -Wall -I. -Iinclude
+SOX			= sox
+
 OUT_DIR		= bin
 OBJ_DIR		= src
 
@@ -53,7 +55,9 @@ $(ALIB): $(C_OBJS)
 ###############################################################################################################
 
 test: 
-	./$(DEMO) $(TEST_DIR)/sample.wav $(OUT_DIR)/sample_out.wav -a 40 -e 20 -d 2
+	./$(DEMO) $(TEST_DIR)/sample.wav $(OUT_DIR)/sample_out.raw -a 40 -e 20 -d 2
+	$(SOX) -r 44100 -b 16 -e signed -c 2 $(OUT_DIR)/sample_out.raw $(OUT_DIR)/sample_out.wav
+	@$(RM) -rf $(OUT_DIR)/sample_out.raw
 
 clean:
 	@echo Removing all temporary binaries...

@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <math.h>
 
 #include "BR_api.h"
 #include "common.h"
 #include "define.h"
+
 
 void Usage(char *argv)
 {
@@ -60,25 +63,20 @@ int main(int argc, char **argv)
     }
 
 	
-	//errCode = AudioRendering(5);
-	if(errCode != 0)
-    {
-        fprintf(stderr,"[Err:%d] Error\n",errCode);
-        return 0;
-    }
-
-	int fileSize;
-
     //Memory Allocation of input/output files
     /* Wav Open and Header Read */
-	FILE *inFile = fopen(inFileName,"rb");
-	WAV_HEADER header;
-	if(inFile == NULL)	return 0;
-	else				fread(&header, 1, sizeof(WAV_HEADER),inFile);
+	FILE *inFile = fopen(inFileName, "rb");
+	FILE *outFile= fopen(outFileName,"wb");
+
+	WAV_HEADER inHeader;
+	if(inFile == NULL)	return 0;	//ERR
+	else				fread(&inHeader, 1, sizeof(WAV_HEADER),inFile);
 	
-	int sampleRate = header.sampleRate;
-	int numChannels= header.numChannels;
-	
+	if(outFile == NULL) return 0;	//ERR
+
+	int sampleRate = inHeader.sampleRate;
+	int numChannels= inHeader.numChannels;
+			
 	if(sampleRate > MAX_SAMPLE_RATE)
 	{
 		printf("[Err]Sample Rate must be under %d Hz\n", MAX_SAMPLE_RATE);
@@ -89,22 +87,44 @@ int main(int argc, char **argv)
 		printf("[Err]Input signal must be mono signal\n");
 		return 0;
 	}
-
 	
-
     //Azimuth and elevation recalculating
-
-	RENDER_HANDLE info;
 
     //Rendering the signal(short time buffer processing)
     //3D Audio Rendering
 	printf("AudioRendering\n");
-	AudioRendering(azimuth);
+	short inputBuffer[MAX_FRAME_SIZE];
+	short outLBuffer[MAX_FRAME_SIZE];
+	short outRBuffer[MAX_FRAME_SIZE];
+	
+	int frameSize = (int)floor(sampleRate * 10.0/1000);
+	int cnt=0;
+		
+	RENDER_HANDLE info;
+	errCode = AudioRenderingCreate(sampleRate, frameSize, elevation, azimuth, distance, &info);
+	if(errCode != 0)	return 0; 	//ERR
 
+	while(frameSize == (int)fread(inputBuffer,sizeof(short),frameSize,inFile))
+	{
+		memcpy(outLBuffer, inputBuffer, sizeof(short) * frameSize);
+		memcpy(outRBuffer, inputBuffer, sizeof(short) * frameSize);
+		errCode = AudioRenderingExec(info, inputBuffer, outLBuffer, outRBuffer);
+		if(errCode !=0) return 0;
+
+		errCode = StereoPcmWrite(outLBuffer, outRBuffer, frameSize, outFile);
+		if(errCode != 0) return 0;
+		cnt++;		//ERR
+	}
     //Output Wave Check Clipping
     //Output Wave writing
 
-
     //Memory destroy
+	//
+	errCode = AudioRenderingDestroy(info);
+	if(errCode != 0)	return 0; 	//ERR
+	fclose(inFile);
+	fclose(outFile);
+
+	printf("Finish Audio Rendering\n");
     return 0;
 }

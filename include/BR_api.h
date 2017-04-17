@@ -15,8 +15,8 @@ typedef void *RENDER_HANDLE;
 
 int AudioRendering(int f_length);
 
-int AudioRenderingExec(RENDER_HANDLE *handle);
-int AudioRenderingCreate(RENDER_HANDLE *handle);
-int AudioRenderingDestroy(RENDER_HANDLE *handle);
+int AudioRenderingCreate(int sampleRate, int frameSize, int elevation, int azimuth, int distance, RENDER_HANDLE *handle);
+int AudioRenderingExec(RENDER_HANDLE handle, short *inputBuffer, short *outLBuffer, short *outRBuffer);
+int AudioRenderingDestroy(RENDER_HANDLE handle);
 
 #endif

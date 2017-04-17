@@ -5,8 +5,13 @@
 #include <sys/stat.h>
 
 #include "common.h"
+#include "define.h"
 
-
+void ErrMessage(int i)
+{
+	printf("[Err]: %d\n",i);
+	exit(1);
+}
 int GetFileSize (const char *fileName, int *size)
 {
 	struct stat fs;
@@ -33,4 +38,30 @@ int GetFileSize (const char *fileName, int *size)
 	return 0; // No ERR
 }
 
+
+int StereoPcmWrite(const short *lBuffer, const short *rBuffer,int size, FILE *file)
+{
+	if((lBuffer == NULL) || (rBuffer == NULL))
+	{
+		return -1;
+	}
+	if((size > MAX_FRAME_SIZE) ||(size <= 0))
+	{
+		return -2;
+	}
+	if(file == NULL)
+	{
+		return -3;
+	}
+
+	short outBuffer[MAX_FRAME_SIZE*2];
+
+	for(int i=0;i<size;i++)
+	{
+		outBuffer[i*2]  = lBuffer[i];
+		outBuffer[i*2+1]= rBuffer[i];
+	}
+	
+	return size*2 == (int)fwrite(outBuffer,sizeof(short),size*2,file)? 0: -4;
+}
 

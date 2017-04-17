@@ -8,6 +8,8 @@
 * All Right Reserved
 */
 
+#include <stdint.h>
+
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
@@ -28,9 +30,10 @@ typedef struct _WAV_HEADER_
     uint32_t datachunkSize;
 }WAV_HEADER;
 
+void ErrMessage(int i);
 
 int GetFileSize(const char *fileName, int *size);
 
-int ReadWavHeader(FILE *file); 
+int StereoPcmWrite(const short *lBuffer, const short *RBuffer,int size, FILE *file);
 
 #endif
