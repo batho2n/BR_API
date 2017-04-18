@@ -106,14 +106,12 @@ int main(int argc, char **argv)
 
 	while(frameSize == (int)fread(inputBuffer,sizeof(short),frameSize,inFile))
 	{
-		memcpy(outLBuffer, inputBuffer, sizeof(short) * frameSize);
-		memcpy(outRBuffer, inputBuffer, sizeof(short) * frameSize);
 		errCode = AudioRenderingExec(info, inputBuffer, outLBuffer, outRBuffer);
 		if(errCode !=0) return 0;
 
 		errCode = StereoPcmWrite(outLBuffer, outRBuffer, frameSize, outFile);
-		if(errCode != 0) return 0;
-		cnt++;		//ERR
+		if(errCode != 0) return 0;		//ERR
+		cnt++;
 	}
     //Output Wave Check Clipping
     //Output Wave writing
