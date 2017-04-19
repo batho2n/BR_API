@@ -55,7 +55,7 @@ $(ALIB): $(C_OBJS)
 ###############################################################################################################
 
 test: 
-	./$(DEMO) $(TEST_DIR)/sample.wav $(OUT_DIR)/sample_out.raw -a 40 -e 20 -d 2
+	./$(DEMO) -i $(TEST_DIR)/sample.wav -o $(OUT_DIR)/sample_out.raw -a 40 -e 20 -d 2 -s 10
 	$(SOX) -r 44100 -b 16 -e signed -c 2 $(OUT_DIR)/sample_out.raw $(OUT_DIR)/sample_out.wav
 	@$(RM) -rf $(OUT_DIR)/sample_out.raw
 

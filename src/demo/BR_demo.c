@@ -13,16 +13,19 @@ void Usage(char *argv)
 {
     fprintf(stderr,"\nUsage of %s : <input mono file> <output streo file> [options]\n", argv);
     fprintf(stderr,"[options]\n");
+    fprintf(stderr,"    -i  : Input mono wav file\n");
+    fprintf(stderr,"    -o  : Output stereo raw file\n");
     fprintf(stderr,"    -a  : Azimuth -180 ~ 180, 0 is forward, [default 0]\n");
     fprintf(stderr,"    -e  : Elevation -90 ~ 90, 0 is forward, [default 0]\n");
     fprintf(stderr,"    -d  : Distance 1 ~ 5, 1 is nearest, [default 1]\n");
+    fprintf(stderr,"    -s  : Frame size < 20 (msec), [default 10]\n");
     fprintf(stderr,"    -h  : Show usage of %s\n", argv);
 }
 
 
 int main(int argc, char **argv)
 {
-    if(argc < 3)
+    if(argc < 5)
     {
         Usage(argv[0]);
         return 0;
@@ -33,17 +36,24 @@ int main(int argc, char **argv)
     int azimuth = 0;
     int elevation = 0;
     int distance = 3;
-    
+   	int frameSizeTime = 10;
+	
     int errCode;
     int args = 1;
-    strcpy(inFileName,argv[args++]);
-    strcpy(outFileName,argv[args++]);
 
     for(;args<argc;args++)
     {
         if(argv[args][0] == '-')
             switch (argv[args][1])
             {
+                case 'i':
+                    args++;
+    				strcpy(inFileName,argv[args]);
+                    break;
+                case 'o':
+                    args++;
+    				strcpy(outFileName,argv[args]);
+                    break;
                 case 'a':
                     args++;
                     azimuth = atoi(argv[args]);
@@ -55,6 +65,10 @@ int main(int argc, char **argv)
                 case 'd':
                     args++;
                     distance = atoi(argv[args]);
+                    break;
+                case 's':
+                    args++;
+                    frameSizeTime = atoi(argv[args]);
                     break;
                 default:
                     Usage(argv[0]);
@@ -92,27 +106,29 @@ int main(int argc, char **argv)
 
     //Rendering the signal(short time buffer processing)
     //3D Audio Rendering
-	printf("AudioRendering\n");
+	printf("Audio Rendering API Demo Program\n");
 	short inputBuffer[MAX_FRAME_SIZE];
 	short outLBuffer[MAX_FRAME_SIZE];
 	short outRBuffer[MAX_FRAME_SIZE];
 	
-	int frameSize = (int)floor(sampleRate * 10.0/1000);
 	int cnt=0;
-		
+	int frameSize = (int)(floor(sampleRate*frameSizeTime/1000.0));
+	
 	RENDER_HANDLE info;
-	errCode = AudioRenderingCreate(sampleRate, frameSize, elevation, azimuth, distance, &info);
+	errCode = AudioRenderingCreate(sampleRate, frameSize, &info);
 	if(errCode != 0)	return 0; 	//ERR
+	printf("API Create Success\n");
 
 	while(frameSize == (int)fread(inputBuffer,sizeof(short),frameSize,inFile))
 	{
-		errCode = AudioRenderingExec(info, inputBuffer, outLBuffer, outRBuffer);
+		errCode = AudioRenderingExec(info, elevation, azimuth,  inputBuffer, outLBuffer, outRBuffer);
 		if(errCode !=0) return 0;
 
 		errCode = StereoPcmWrite(outLBuffer, outRBuffer, frameSize, outFile);
 		if(errCode != 0) return 0;		//ERR
 		cnt++;
 	}
+	printf("API Execution Success\n");
     //Output Wave Check Clipping
     //Output Wave writing
 
@@ -123,6 +139,7 @@ int main(int argc, char **argv)
 	fclose(inFile);
 	fclose(outFile);
 
+	printf("API Destroy Success\n");
 	printf("Finish Audio Rendering\n");
     return 0;
 }

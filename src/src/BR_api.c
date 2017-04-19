@@ -12,22 +12,6 @@
 /**
  *  * Defines 3D Audio Rendering Object 
  */
-typedef struct _AUDIO_RENDERING_INFO_ 
-{
-	int sampleRate;
-	int frameSize;
-	int channels;
-	int filterSize;
-
-	int elevation;
-	int azimuth;
-	int distance;
-	
-	float preLBuffer[PRE_BUFFER_SIZE];
-	float preRBuffer[PRE_BUFFER_SIZE];
-
-}AUDIO_RENDERING_INFO;
-
 
 int AudioRendering(int f_length)
 {
@@ -38,8 +22,7 @@ int AudioRendering(int f_length)
     return 0;           //No ERR
 }
 
-int AudioRenderingCreate(int sampleRate, int frameSize, int elevation, int azimuth, int distance,
-		RENDER_HANDLE *handle)
+int AudioRenderingCreate(const int sampleRate, const int frameSize, RENDER_HANDLE *handle)
 {
 	AUDIO_RENDERING_INFO *info;
 
@@ -49,6 +32,7 @@ int AudioRenderingCreate(int sampleRate, int frameSize, int elevation, int azimu
 	}
 
 	/* init */
+	info = NULL;
 	info = (AUDIO_RENDERING_INFO *) malloc (sizeof(AUDIO_RENDERING_INFO));
 	if(info == NULL)
 	{
@@ -56,30 +40,65 @@ int AudioRenderingCreate(int sampleRate, int frameSize, int elevation, int azimu
 	}
 	memset (info, 0x00, sizeof(AUDIO_RENDERING_INFO));
 
+	if(sampleRate > MAX_SAMPLE_RATE)
+	{
+		free(info);
+		return -3;
+	}
 	info->sampleRate = sampleRate;
-	info->frameSize = frameSize;
+
+	if(frameSize > MAX_FRAME_SIZE)
+	{
+		free(info);
+		return -4;
+	}
+	info->frameSize = frameSize; 
 	info->channels = 2;
 	info->filterSize = HRIR_FILTER_SIZE;
-	info->elevation = elevation;
-	info->azimuth = azimuth;
-	info->distance = distance;
-
+	info->elevation = 0;
+	info->azimuth = 0;
+	info->distance = 1;
+	info->filterIndex = 72;
+	
 	*handle = info;
 	return 0; //No ERR
 }
 
 
-int AudioRenderingExec(RENDER_HANDLE handle, short *inputBuffer, short *outLBuffer, short *outRBuffer)
+int AudioRenderingExec(RENDER_HANDLE handle, const int elevation, const int azimuth,  const short *inputBuffer,
+		short *outLBuffer, short *outRBuffer)
 {
+	int errCode;
+	
 	if(handle == NULL)	return -1;	//ERR
-
+	
+	int elevationIndex;
 	AUDIO_RENDERING_INFO *info;
 	info = (AUDIO_RENDERING_INFO *)handle;
+	int filterIndex = 72;
+	int elevationQuant;
+	int azimuthQuant;
+	
+	//Cordinate adaptation
+	errCode = ConvertCordinate(elevation, azimuth, &elevationQuant, &azimuthQuant);
+	if(errCode != 0)	return -2;	//ERR 
 
-	//Filtering
-	//
-	//Pre BUFFER update
+	printf("[Ele]: %d > %d\n",elevation, elevationQuant);
+	printf("[Azi]: %d > %d\n",azimuth, azimuthQuant);
+	//Filter index selection
+	/*
+	if((info->elevation != elevationQuant) ||(info->azimuth != azimuthQuant))
+		errCode = GetFilterIndex(elevationQuant, azimuthQuant, &filterIndex);
+	else
+		filterIndex = info->filterIndex;
+	*/
+	//Filtering, History buffer update
+	
 
+	//Update parameters
+	info->elevation = elevationQuant;
+	info->azimuth = azimuthQuant;
+	info->filterIndex = filterIndex;
 	return 0;
 }
 
