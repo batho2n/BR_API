@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     char outFileName[256];
     int azimuth = 0;
     int elevation = 0;
-    int distance = 3;
+    int distance = 1;
    	int frameSizeTime = 10;
 	
     int errCode;
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
 
 	while(frameSize == (int)fread(inputBuffer,sizeof(short),frameSize,inFile))
 	{
-		errCode = AudioRenderingExec(info, elevation, azimuth,  inputBuffer, outLBuffer, outRBuffer);
+		errCode = AudioRenderingExec(info, elevation, azimuth, distance, inputBuffer, outLBuffer, outRBuffer);
 		if(errCode !=0) return 0;
 
 		errCode = StereoPcmWrite(outLBuffer, outRBuffer, frameSize, outFile);

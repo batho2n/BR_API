@@ -55,8 +55,9 @@ int StereoPcmWrite(const short *lBuffer, const short *rBuffer,int size, FILE *fi
 	}
 
 	short outBuffer[MAX_FRAME_SIZE*2];
-
-	for(int i=0;i<size;i++)
+    
+    int i;
+	for(i=0;i<size;i++)
 	{
 		outBuffer[i*2]  = lBuffer[i];
 		outBuffer[i*2+1]= rBuffer[i];
