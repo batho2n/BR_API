@@ -12,9 +12,9 @@ BR_api > make
   + [Directory]
     + libs		: Libary file
     + bin		: Demo file and test output
-+ [Files]
-  + libs/libBR_api.a	: API Library file
-  + bin/BR_demo		: BR API demo file
+  + [Files]
+    + libs/libBR_api.a	: API Library file
+    + bin/BR_demo		: BR API demo file
 
 ## 2. Test
 + Test the 3D Audio rendering using bin/BR_demo file and test/sample.wav
